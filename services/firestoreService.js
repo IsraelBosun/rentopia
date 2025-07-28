@@ -30,30 +30,30 @@ let storage;
 
 // --- ADDED DEBUGGING LOGS AND REINFORCED CHECK ---
 console.log("FirestoreService: Starting Firebase Initialization...");
-console.log("FirestoreService: Loaded firebaseConfig:", firebaseConfig);
+console.log("FirestoreService: Loaded firebaseConfig:", firebaseConfig); // Check what config is loaded
 
 try {
   // Check if firebaseConfig is not empty and has essential projectId
   if (!Object.keys(firebaseConfig).length || !firebaseConfig.projectId) {
     console.error("FirestoreService: Firebase config is missing or incomplete. Ensure firebaseConfig.js is correctly set up with projectId.");
-    // Optionally throw an error here to stop execution if config is critical
-    // throw new Error("Firebase configuration error.");
+    // Do NOT proceed if config is bad, this prevents the _delegate error later
+    // The variables (app, db, storage) will remain undefined.
   } else {
     // Attempt to initialize Firebase App
     app = initializeApp(firebaseConfig);
-    console.log("FirestoreService: Firebase App initialized status (!!app):", !!app);
+    console.log("FirestoreService: Firebase App initialized status (!!app):", !!app); // Should be true
 
     // Attempt to get Firestore instance
     db = getFirestore(app);
-    console.log("FirestoreService: Firestore DB initialized status (!!db):", !!db);
+    console.log("FirestoreService: Firestore DB initialized status (!!db):", !!db); // THIS IS CRUCIAL: Should be true
 
     // Attempt to get Storage instance
     storage = getStorage(app);
-    console.log("FirestoreService: Firebase Storage initialized status (!!storage):", !!storage);
+    console.log("FirestoreService: Firebase Storage initialized status (!!storage):", !!storage); // Should be true
   }
 } catch (error) {
   console.error("FirestoreService: FATAL ERROR during Firebase Initialization:", error);
-  // You might want to display a user-friendly error message here
+  // If an error occurs here, app, db, and storage will remain undefined.
 }
 // --- END ADDED DEBUGGING LOGS ---
 
@@ -63,6 +63,7 @@ try {
  */
 export const firestorePaths = {
   // Public data (e.g., listings visible to all users)
+  // Ensure firebaseConfig.projectId is available here.
   getPublicListingsCollection: () => ({
     path: `artifacts/${firebaseConfig.projectId}/public/data/listings`
   }),
@@ -96,7 +97,7 @@ export const addDocument = async (collectionPath, data) => {
   try {
     // --- REINFORCED CHECK ---
     if (!db) {
-      console.error("addDocument: Firestore DB instance is undefined.");
+      console.error("addDocument: Firestore DB instance is undefined. Throwing error.");
       throw new Error("Firestore is not initialized.");
     }
     // --- END REINFORCED CHECK ---
@@ -122,7 +123,7 @@ export const setDocument = async (collectionPath, docId, data) => {
   try {
     // --- REINFORCED CHECK ---
     if (!db) {
-      console.error("setDocument: Firestore DB instance is undefined.");
+      console.error("setDocument: Firestore DB instance is undefined. Throwing error.");
       throw new Error("Firestore is not initialized.");
     }
     // --- END REINFORCED CHECK ---
@@ -147,7 +148,7 @@ export const updateDocument = async (collectionPath, docId, data) => {
   try {
     // --- REINFORCED CHECK ---
     if (!db) {
-      console.error("updateDocument: Firestore DB instance is undefined.");
+      console.error("updateDocument: Firestore DB instance is undefined. Throwing error.");
       throw new Error("Firestore is not initialized.");
     }
     // --- END REINFORCED CHECK ---
@@ -171,7 +172,7 @@ export const getDocument = async (collectionPath, docId) => {
   try {
     // --- REINFORCED CHECK ---
     if (!db) {
-      console.error("getDocument: Firestore DB instance is undefined.");
+      console.error("getDocument: Firestore DB instance is undefined. Throwing error.");
       throw new Error("Firestore is not initialized.");
     }
     // --- END REINFORCED CHECK ---
@@ -197,7 +198,7 @@ export const deleteDocument = async (collectionPath, docId) => {
   try {
     // --- REINFORCED CHECK ---
     if (!db) {
-      console.error("deleteDocument: Firestore DB instance is undefined.");
+      console.error("deleteDocument: Firestore DB instance is undefined. Throwing error.");
       throw new Error("Firestore is not initialized.");
     }
     // --- END REINFORCED CHECK ---
@@ -217,7 +218,7 @@ export const getAllDocuments = async (collectionPath) => {
   try {
     // --- REINFORCED CHECK ---
     if (!db) {
-      console.error("getAllDocuments: Firestore DB instance is undefined.");
+      console.error("getAllDocuments: Firestore DB instance is undefined. Throwing error.");
       throw new Error("Firestore is not initialized.");
     }
     // --- END REINFORCED CHECK ---
@@ -319,7 +320,7 @@ export const listenToCollection = (collectionPath, conditions = [], callback, on
 export const uploadImageToFirebaseStorage = async (uri, userId) => {
   // --- REINFORCED CHECK ---
   if (!storage) {
-    console.error("uploadImageToFirebaseStorage: Firebase Storage instance is undefined.");
+    console.error("uploadImageToFirebaseStorage: Firebase Storage instance is undefined. Throwing error.");
     throw new Error("Firebase Storage is not initialized.");
   }
   // --- END REINFORCED CHECK ---

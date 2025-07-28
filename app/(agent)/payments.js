@@ -40,7 +40,7 @@ export default function AgentPaymentsScreen() {
       // --- FIX IS HERE: REORDERED ARGUMENTS ---
       const unsubscribe = listenToCollection(
         paymentsCollectionPath,
-        [['agentId', '==', userId]], // This is now correctly the 'conditions' argument
+        [{ field: 'agentId', operator: '==', value: userId }], // This is now correctly the 'conditions' argument
         (data) => { // This is now correctly the 'callback' argument
           // Sort by transaction date, newest first
           const sortedData = data.sort((a, b) => {

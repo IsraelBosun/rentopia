@@ -6,11 +6,13 @@ import { useAuth } from '../../context/AuthContext';
 import { listenToCollection, deleteDocument, firestorePaths } from '../../services/firestoreService'; // Import listenToCollection and deleteDocument
 import colors from '../../constants/Colors';
 
+
 /**
  * AgentListingsScreen Component
  * Displays a list of properties created by the current agent.
  * Allows navigation to view/edit details and delete listings.
  */
+
 export default function AgentListingsScreen() {
   const { userId } = useAuth(); // Get the current agent's userId
   const [listings, setListings] = useState([]);
@@ -35,7 +37,7 @@ export default function AgentListingsScreen() {
       // --- FIX IS HERE: REORDERED ARGUMENTS ---
       const unsubscribe = listenToCollection(
         listingsCollectionPath,
-        [['agentId', '==', userId]], // This is now correctly the 'conditions' argument
+        [{ field: 'agentId', operator: '==', value: userId }], // This is now correctly the 'conditions' argument
         (data) => { // This is now correctly the 'callback' argument
           // Sort by creation date, newest first
           const sortedData = data.sort((a, b) => {
@@ -59,10 +61,12 @@ export default function AgentListingsScreen() {
     }, [userId]) // Re-run effect if userId changes
   );
 
+
   /**
    * Handles deleting a listing.
    * @param {string} listingId - The ID of the listing to delete.
    */
+  
   const handleDeleteListing = (listingId) => {
     Alert.alert(
       "Delete Listing",
@@ -95,10 +99,11 @@ export default function AgentListingsScreen() {
    * Renders a single listing item in the FlatList.
    * @param {object} item - The listing data.
    */
+
   const renderListingItem = ({ item }) => (
     <TouchableOpacity
       style={styles.listingCard}
-      onPress={() => router.push(`/agent/listings/${item.id}`)} // Navigate to dynamic listing details
+      onPress={() => router.push(`/(agent)/listings/${item.id}`)} // Navigate to dynamic listing details
     >
       <View style={styles.cardHeader}>
         <Text style={styles.listingTitle}>{item.title}</Text>
@@ -111,7 +116,7 @@ export default function AgentListingsScreen() {
       <View style={styles.cardActions}>
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={() => router.push(`/agent/listings/${item.id}`)}
+          onPress={() => router.push(`/(agent)/listings/${item.id}`)}
         >
           <Text style={styles.actionButtonText}>View/Edit</Text>
         </TouchableOpacity>
@@ -174,6 +179,9 @@ export default function AgentListingsScreen() {
     </View>
   );
 }
+
+
+
 
 const styles = StyleSheet.create({
   container: {
